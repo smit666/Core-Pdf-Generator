@@ -1,0 +1,46 @@
+﻿<div id="test"> 
+    <h1>Test</h1>
+    <div id="frames">
+        <iframe src="frame1.html"></iframe>
+        @*<iframe src="frame2.html"></iframe>*@
+    </div>
+</div>
+<h2>test2</h2>
+<input type="button" id="create_pdf" value="Generate" />
+<script>
+    (function () {
+        var
+            form = $('#test'),
+            cache_width = form.width(),
+            a3 = [841.89, 1190.55]; // for a4 size paper width and height
+
+        $('#create_pdf').on('click', function () {
+            $('body').scrollTop(0);
+            createPDF();
+        });
+        //create pdf
+        function createPDF() {
+            getCanvas().then(function (canvas) {
+                var
+                    img = canvas.toDataURL("image/png"),
+                    doc = new jsPDF({
+                        unit: 'px',
+                        format: 'a3'
+                    });
+                doc.addImage(img, 'PNG', 20, 20);
+                doc.save(document.title + '.pdf');
+                form.width(cache_width);
+            });
+        }
+
+        // create canvas object
+        function getCanvas() {
+            form.width((a3[0] * 1.33333) - 80).css('max-width', 'none');
+            return html2canvas(form, {
+                imageTimeout: 10000,
+                removeContainer: true
+            });
+        }
+
+    }());
+</script>
